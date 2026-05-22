@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useEffect, useMemo, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 
 type Product = {
   id: string;
@@ -19,33 +19,21 @@ type CartItem = Product & {
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
 
-const flavorFilters = [
-  { label: "All", value: "all" },
-  { label: "Classic", value: "classic" },
-  { label: "Chocolate", value: "chocolate" },
-  { label: "Fruit", value: "fruit" },
-  { label: "Seasonal", value: "seasonal" }
-] as const;
-
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
-  const [selectedFlavor, setSelectedFlavor] = useState<(typeof flavorFilters)[number]["value"]>("all");
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [customerName, setCustomerName] = useState("");
   const [email, setEmail] = useState("");
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/products?flavor=${selectedFlavor}`)
+    fetch(`${apiBaseUrl}/api/products`)
       .then((response) => response.json())
       .then((data: Product[]) => setProducts(data))
       .catch(() => setStatusMessage("We could not load today's cookies."));
-  }, [selectedFlavor]);
+  }, []);
 
-  const cartSubtotal = useMemo(
-    () => cartItems.reduce((total, item) => total + item.price, 0),
-    [cartItems]
-  );
+  const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
 
   const addToCart = (product: Product) => {
     setStatusMessage("");
@@ -105,38 +93,14 @@ export default function Home() {
   return (
     <main className="page">
       <section className="hero">
-        <div>
-          <p>Small-batch online bakery</p>
-          <h1>Cookies shipped while they are still worth talking about.</h1>
-          <p>
-            Crumb & Co. is a simple ecommerce app for interview debugging. Browse cookies,
-            add treats to the cart, and place a mock checkout order.
-          </p>
-        </div>
-        <aside className="hero-card" aria-label="Featured cookie">
-          <span className="hero-cookie">🍪</span>
-          <strong>Fresh dozen drop</strong>
-          <p>Free local delivery on orders over $25.</p>
-        </aside>
+        <p>Small-batch online bakery</p>
+        <h1>Crumb & Co.</h1>
+        <p>Browse cookies, add treats to the cart, and place a mock checkout order.</p>
       </section>
 
       <section className="shop-grid" aria-label="Cookie shop">
         <div>
-          <div className="toolbar">
-            <h2>Shop cookies</h2>
-            <div className="filters" aria-label="Filter by flavor">
-              {flavorFilters.map((filter) => (
-                <button
-                  className={filter.value === selectedFlavor ? "filter-button active" : "filter-button"}
-                  key={filter.value}
-                  onClick={() => setSelectedFlavor(filter.value)}
-                  type="button"
-                >
-                  {filter.label}
-                </button>
-              ))}
-            </div>
-          </div>
+          <h2>Shop cookies</h2>
 
           <div className="product-grid">
             {products.map((product) => (
