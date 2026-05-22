@@ -18,6 +18,8 @@ type CartItem = Product & {
 };
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
+const defaultCustomerName = "Ada Lovelace";
+const defaultEmail = "ada@example.com";
 
 const fetchProducts = async () => {
   const response = await fetch(`${apiBaseUrl}/api/products`);
@@ -32,8 +34,8 @@ const fetchProducts = async () => {
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [customerName, setCustomerName] = useState("");
-  const [email, setEmail] = useState("");
+  const [customerName, setCustomerName] = useState(defaultCustomerName);
+  const [email, setEmail] = useState(defaultEmail);
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
@@ -97,8 +99,8 @@ export default function Home() {
 
     setProducts(updatedProducts);
     setCartItems([]);
-    setCustomerName("");
-    setEmail("");
+    setCustomerName(defaultCustomerName);
+    setEmail(defaultEmail);
     setStatusMessage(`Order ${order.id.slice(0, 8)} placed for $${order.total.toFixed(2)}.`);
   };
 
