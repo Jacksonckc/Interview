@@ -19,6 +19,16 @@ type CartItem = Product & {
 
 const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4001";
 
+const fetchProducts = async () => {
+  const response = await fetch(`${apiBaseUrl}/api/products`);
+
+  if (!response.ok) {
+    throw new Error("Failed to load products");
+  }
+
+  return (await response.json()) as Product[];
+};
+
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
@@ -27,9 +37,8 @@ export default function Home() {
   const [statusMessage, setStatusMessage] = useState("");
 
   useEffect(() => {
-    fetch(`${apiBaseUrl}/api/products`)
-      .then((response) => response.json())
-      .then((data: Product[]) => setProducts(data))
+    fetchProducts()
+      .then((data) => setProducts(data))
       .catch(() => setStatusMessage("We could not load today's cookies."));
   }, []);
 
@@ -72,7 +81,7 @@ export default function Home() {
         email,
         items: cartItems.map((item) => ({
           productId: item.id,
-          quantity: 1
+          quantity: item.quantity
         }))
       })
     });
@@ -84,6 +93,9 @@ export default function Home() {
     }
 
     const order = (await response.json()) as { id: string; total: number };
+    const updatedProducts = await fetchProducts();
+
+    setProducts(updatedProducts);
     setCartItems([]);
     setCustomerName("");
     setEmail("");
