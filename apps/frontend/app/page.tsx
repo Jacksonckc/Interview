@@ -33,7 +33,7 @@ export default function Home() {
       .catch(() => setStatusMessage("We could not load today's cookies."));
   }, []);
 
-  const cartSubtotal = cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+  const cartSubtotal = cartItems.reduce((total, item) => total + item.price, 0);
 
   const addToCart = (product: Product) => {
     setStatusMessage("");
