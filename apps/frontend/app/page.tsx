@@ -81,7 +81,7 @@ export default function Home() {
         email,
         items: cartItems.map((item) => ({
           productId: item.id,
-          quantity: item.quantity
+          quantity: 1
         }))
       })
     });
